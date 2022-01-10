@@ -1,0 +1,16 @@
+<h4>伺服器錯誤!重新整理會導致錯誤消失。</h4>
+<ng-container *ngIf="error">
+    <h5 class="text-danger">錯誤：{{error.message}}</h5>
+    <p class="font-weight-bold">如果你看到這個，代表用戶端並沒有出錯。</p>
+    <p>你可以做的事情：</p>
+    <ol>
+        <li>開啟開發人員模式。</li>
+        <li>移至Network頁籤。</li>
+        <li>檢查錯誤請求。</li>
+        <li>檢查請求Url是否正確。</li>
+        <li>在Postman測試Url。</li>
+        <li>或是連系統廠商協助處理。</li>
+    </ol>
+    <p>請追蹤以下歷程，這裡是你開始檢查的地方。</p>
+    <code class="mt-5" style="background-color: rgb(255, 255, 255);">{{error.detail}}</code>
+</ng-container>

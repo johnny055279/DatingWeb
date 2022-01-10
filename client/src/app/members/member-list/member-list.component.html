@@ -1,0 +1,68 @@
+<div class="text-center mt-3">
+    <!-- 頁面會先生成，所以一開始可能沒有pagination -->
+    <h2>適合您的人數 - 共{{pagination?.totalItems}}人。</h2>
+</div>
+
+<div class="container mt-3">
+    <form #form="ngForm" class="form-inline mb-3" (ngSubmit)="loadMembers()" autocomplete="off">
+        <div class="form-group">
+            <label>最小年齡</label>
+            <input type="number" class="form-control ml-1" style="width: 70px;" name="minAge" [(ngModel)]="userParams.minAge">
+        </div>
+
+        <div class="form-group px-2">
+            <label>最大年齡</label>
+            <input type="number" class="form-control ml-1" style="width: 70px;" name="maxAge" [(ngModel)]="userParams.maxAge">
+        </div>
+
+        <div class="form-group px-2">
+            <label>性別</label>
+            <select name="gender" style="width: 130px" class="form-control ml-1" [(ngModel)]="userParams.gender">
+                <option *ngFor="let gender of genderList" [value]="gender.value">{{gender.display}}</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary ml-1" type="submit">搜尋</button>
+        <button class="btn btn-info ml-1" type="button" (click)="resetFilters()">重製</button>
+
+        <div class="col">
+            <div class="btn-group float-right">
+                <button 
+                class="btn btn-primary" 
+                name="orderBy" 
+                [(ngModel)]="userParams.orderBy" 
+                (click)="loadMembers()" 
+                btnRadio="lastLoginTime"
+                type="button">最後登入時間</button>
+    
+                <button 
+                class="btn btn-primary" 
+                name="orderBy" 
+                [(ngModel)]="userParams.orderBy" 
+                (click)="loadMembers()" 
+                btnRadio="created"
+                type="button">帳號創建時間</button>
+    
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-2" *ngFor="let member of members">
+        <app-member-card [member] = "member"></app-member-card>
+    </div>
+</div>
+<div class="d-flex justify-content-center" *ngIf="pagination">
+    <pagination 
+    [boundaryLinks]="true" 
+    [totalItems]="pagination.totalItems"
+    [itemsPerPage]="pagination.itemsPerPage"
+    [(ngModel)]="pagination.currentPage"
+    (pageChanged)="pageChange($event)"
+    previousText="&lsaquo;" 
+    nextText="&rsaquo;" 
+    firstText="&laquo;" 
+    lastText="&raquo;">
+    </pagination>
+</div>

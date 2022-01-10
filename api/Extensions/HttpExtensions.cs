@@ -1,0 +1,30 @@
+﻿using Dating_WebAPI.Helpers;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace Dating_WebAPI.Extensions
+{
+    public static class HttpExtensions
+    {
+        public static void AddPaginationHeader(this HttpResponse response, int currentPage, int itemsPerPage, int totalItems, int totalPages)
+        {
+            var paginationHeader = new PaginationHeader(currentPage, itemsPerPage, totalItems, totalPages);
+
+
+            // 讓Json變成小寫開頭
+            var option = new JsonSerializerOptions{
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            // Add Custom Header
+            response.Headers.Add("Pagination", JsonSerializer.Serialize(paginationHeader, option));
+
+            // To make custom header available --> Access-Control-Expose-Headers must spell correct!
+            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
+        }
+    }
+}

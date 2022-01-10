@@ -1,0 +1,13 @@
+<div class="form-group">
+    <!-- [(ngModel)]可以記錄使用者輸入的資訊，以name當作指標。 -->
+    <input 
+        [class.is-invalid]="ngControl.touched && ngControl.invalid"
+        class="form-control" 
+        type="{{type}}" 
+        [formControl]="ngControl.control" 
+        placeholder="{{label}}"/>
+    <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">請輸入{{label}}。</div>
+    <div *ngIf="ngControl.control.errors?.minlength" class="invalid-feedback">{{label}}至少{{ngControl.control.errors.minlength['requiredLength']}}個字。</div>
+    <div *ngIf="ngControl.control.errors?.maxlength" class="invalid-feedback">{{label}}至多{{ngControl.control.errors.maxlength['requiredLength']}}個字。</div>
+    <div *ngIf="ngControl.control.errors?.isMatching" class="invalid-feedback">密碼不符。</div>
+</div>

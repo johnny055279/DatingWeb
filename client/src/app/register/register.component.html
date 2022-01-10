@@ -1,0 +1,27 @@
+<!-- 先判Valid 再執行register() ??? -->
+<form [formGroup]="registerForm" (submit)="registerForm.valid && register() " autocomplete="off">
+    <h2 class="text-center text-primary">歡迎註冊</h2>
+    <hr/>
+    <app-text-input [formControl]='registerForm.controls["userName"]' [label]='"使用者帳號"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["password"]' [label]='"使用者密碼"' [type]='"password"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["confirmPassword"]' [label]='"確認密碼"' [type]='"password"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["email"]' [label]='"使用者信箱"' [type]='"email"'></app-text-input>
+    <div class="form-group">
+        <label class="control-label" style="margin-right: 10px;">我是：</label>
+        <label class="label-inline"><input type="radio" value="male" formControlName="gender"/>男生</label>
+        <label class="label-inline"><input type="radio" value="female" formControlName="gender" class="ml-3"/>女生</label>
+    </div>
+    <app-date-input [formControl]='registerForm.controls["birthday"]' [label]='"生日"' [maxDate]='maxDate'></app-date-input>
+    <app-text-input [formControl]='registerForm.controls["nickName"]' [label]='"暱稱"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["city"]' [label]='"居住城市"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["country"]' [label]='"國籍"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["lookingFor"]' [label]='"尋找對象"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["interests"]' [label]='"興趣"'></app-text-input>
+    <app-text-input [formControl]='registerForm.controls["introduction"]' [label]='"介紹自己"'></app-text-input>
+    <div class="form-group text-center">
+        <button [disabled]='!registerForm.valid' class="btn btn-success mr-2" type="submit">註冊</button>
+        <button class="btn btn-danger mr-2" type="button" (click)="cancel()">取消</button>
+    </div>
+</form>
+
+

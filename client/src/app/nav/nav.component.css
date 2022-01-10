@@ -1,0 +1,29 @@
+nav{
+    font-family: "微軟正黑體";
+    font-weight: bolder;
+}
+
+.navbar-brand{
+    color: #fff;
+}
+
+.alert{
+    border:none;
+    margin-bottom: 0.4em;
+}
+
+.alert-custom{
+    font-family: "微軟正黑體";
+    font-weight: bolder;
+    background-color: rgb(255, 221, 255);
+    border: 1px solid rgb(212, 167, 212);
+    text-align: center;
+}
+
+.img{
+    max-height: 40px;
+    border: 1px solid white;
+    display: inline;
+    border-radius: 50%;
+}
+  

@@ -1,0 +1,57 @@
+<!-- 在API回傳資料前，Angular已經把頁面Load好，所以無資料時有可能會噴錯 -->
+<div class="row">
+  <div class="col-4">
+    <div class="card">
+      <img [src]="member.photoUrl || './assets/Images/user.png'" alt="{{member.nickName}}"
+        class="card-img-top img-thumbnail">
+      <div class="card-body">
+        <div class="mb-2" *ngIf="(presence.onlineUser$ | async).includes(member.userName)">
+          <i class="fa fa-user-circle text-success"></i> Online now
+        </div>
+        <div>
+          <strong>所在地:</strong>
+          <p>{{member.city}}, {{member.country}}</p>
+        </div>
+        <div>
+          <strong>年齡:</strong>
+          <p>{{member.age}}</p>
+        </div>
+        <div>
+          <strong>加入時間:</strong>
+          <p>{{member.accountCreateTime | date: 'dd MMM yyyy'}}</p>
+        </div>
+        <div>
+          <strong>上次登入:</strong>
+          <p>{{member.lastLoginTime | timeago}}</p>
+        </div>
+        <div class="card-footer">
+          <div class="btn-group d-flex">
+            <button class="btn btn-outline-info">Like</button>
+            <button class="btn btn-outline-info" (click)="selectTab(3)">Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-8">
+    <tabset class="member-tabset" #memberTabs>
+      <tab heading="關於 {{member.nickName}}" (selectTab)="onTabActivate($event)">
+        <h4>自我介紹:</h4>
+        <p>{{member.introduction}}</p>
+        <h4>正在尋找:</h4>
+        <p>{{member.introduction}}</p>
+      </tab>
+      <tab heading="興趣" (selectTab)="onTabActivate($event)">
+        <h4>興趣:</h4>
+        <p>{{member.interests}}</p>
+      </tab>
+      <tab heading="照片" (selectTab)="onTabActivate($event)">
+        <ngx-gallery [options]="galleryOptions" [images]="galleryImages" class="ngx-gallery"
+          style="display: inline-block; margin-bottom: 20px;"></ngx-gallery>
+      </tab>
+      <tab heading="訊息" (selectTab)="onTabActivate($event)">
+        <app-member-messages [username]="member.userName"></app-member-messages>
+      </tab>
+    </tabset>
+  </div>
+</div>

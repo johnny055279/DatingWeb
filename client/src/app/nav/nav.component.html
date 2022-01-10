@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/" routerLinkActive="active">阿姨交友網</a>
+
+    <div class="collapse navbar-collapse" id="collapseBasic" [collapse]="isCollapsed" [isAnimated]="true">
+      <!-- ng-container不會產出任何html，常用於各種條件轉換。 -->
+
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <ng-container *ngIf="accountService.currentUser$ | async">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/members" routerLinkActive="active">阿姨配對</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/lists" routerLinkActive="active">阿姨列表</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/messages" routerLinkActive="active">給阿姨訊息</a>
+          </li>
+        </ng-container>
+        <li>
+          <a class="nav-link" routerLink="/errors" routerLinkActive="active">Error Test</a>
+        </li>
+        <li>
+          <a class="nav-link" routerLink="/admin" routerLinkActive="active"
+            *appHasRole='["Admin", "Moderator"]'>Admin</a>
+        </li>
+      </ul>
+
+
+      <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
+        <img class="img" [src]="user.photoUrl || './assets/Images/user.png'" [alt]="user.userName" />
+        <a class="btn btn-primary dropdown-toggle ml-2" dropdownToggle
+          aria-controls="dropdown-animated">歡迎：{{user.nickName || user.userName}}</a>
+        <div class="dropdown-menu mt-2" *dropdownMenu>
+          <a class="dropdown-item" routerLink="member/edit">個人資料</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" (click)="logout()">登出</a>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" (click)="openModal(modalTemplate)"
+        *ngIf="!(accountService.currentUser$ | async)">登入</button>
+    </div>
+    <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
+      [attr.aria-expanded]="!isCollapsed" aria-controls="collapseBasic">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>
+
+
+<ng-template #modalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Login</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="!(accountService.currentUser$ | async)">
+    <!-- 使其成為Agular的Form: ngForm -->
+    <!-- async並不支援'!'反轉判斷，所以用null來判別當前有無東西 -->
+    <form class="d-flex" #loginForm="ngForm" (ngSubmit)="login()" autocomplete="off">
+      <input name="username" [(ngModel)]="model.username" class="form-control me-2" type="text" placeholder="account" />
+      <input name="password" [(ngModel)]="model.password" class="form-control me-2" type="password"
+        placeholder="password" />
+      <button class="btn btn-secondary" type="submit">login</button>
+    </form>
+  </div>
+  <div *ngFor="let alert of alerts">
+    <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout" (onClosed)="closeAlert(alert)">{{ alert.msg }}</alert>
+  </div>
+</ng-template>
