@@ -42,9 +42,6 @@ namespace Dating_WebAPI.Helpers
                                                        option => option.MapFrom(
                                                        src => src.Recipient.Photos.FirstOrDefault(
                                                        n => n.IsMain).Url));
-
-            // 即使在設定裡面已經寫了回傳DateTime.Utc，但是Client並不知道是UTC格式，所以這裡使用AutoMapping來協助轉換格式
-            CreateMap<DateTime, DateTime>().ConvertUsing(n => DateTime.SpecifyKind(n, DateTimeKind.Utc));
         }
     }
 }

@@ -15,27 +15,25 @@ namespace Dating_WebAPI.Controllers
     [Authorize]
     public class LikesController : BaseApIController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likesRepository;
+        private IUnitOfWork unitOfWork;
 
-        public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
+        public LikesController(IUnitOfWork unitOfWork)
         {
-            this._userRepository = userRepository;
-            this._likesRepository = likesRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         [HttpPost("{username}")]
         public async Task<ActionResult> AddLike(string userName)
         {
             var sourceUserId = User.GetUserId();
-            var likeUser = await _userRepository.GetUserByUserNameAsync(userName);
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
+            var likeUser = await unitOfWork.userRepository.GetUserByUserNameAsync(userName);
+            var sourceUser = await unitOfWork.likesRepository.GetUserWithLikes(sourceUserId);
 
             if (likeUser == null) return NotFound();
 
             if (sourceUser.UserName == userName) return BadRequest("不要對自己點讚!!");
 
-            var userLike = await _likesRepository.GetUserLike(sourceUserId, likeUser.Id);
+            var userLike = await unitOfWork.likesRepository.GetUserLike(sourceUserId, likeUser.Id);
 
             if (userLike != null) return BadRequest("你已經按過讚惹!");
 
@@ -47,7 +45,7 @@ namespace Dating_WebAPI.Controllers
 
             sourceUser.LikedUsers.Add(userLike);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await unitOfWork.Complete()) return Ok();
 
             return BadRequest("點讚失敗!");
         }
@@ -57,7 +55,7 @@ namespace Dating_WebAPI.Controllers
         {
             likesParams.UserId = User.GetUserId();
 
-            var users = await _likesRepository.GetUserLikes(likesParams);
+            var users = await unitOfWork.likesRepository.GetUserLikes(likesParams);
 
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 

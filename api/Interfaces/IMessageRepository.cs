@@ -19,6 +19,8 @@ namespace Dating_WebAPI.Interfaces
 
         Task<Group> GetMessageGroup(string groupName);
 
+        Task<Group> GetGroupForConnection(string connectionId);
+
         // -----------------------
         void AddMessage(Message message);
 
@@ -29,9 +31,6 @@ namespace Dating_WebAPI.Interfaces
         Task<PageList<MessageDto>> GetMessagesForUser(MessageParams messageParams);
 
         Task<IEnumerable<MessageDto>> GetMessageThread(string currentUserName, string recipientUserName);
-
-        Task<bool> SaveAllAsync();
-
 
     }
 }

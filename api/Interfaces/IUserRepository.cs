@@ -13,8 +13,6 @@ namespace Dating_WebAPI.Interfaces
     {
         void Update(AppUser user);
 
-        Task<bool> SaveAllAsync();
-
         Task<IEnumerable<AppUser>> GetUsersAsync();
 
         Task<AppUser> GetUserByIdAsync(int id);
@@ -24,5 +22,7 @@ namespace Dating_WebAPI.Interfaces
         Task<PageList<MemberDTO>> GetMembersAsync(UserParams userParams);
 
         Task<MemberDTO> GetMemberAsync(string username);
+
+        Task<string> GetUserGender(string username);
     }
 }

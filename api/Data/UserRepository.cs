@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 namespace Dating_WebAPI.Data
 {
     // 實作共用EF方法
-    public class UseRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
 
-        public UseRepository(DataContext dataContext, IMapper mapper)
+        public UserRepository(DataContext dataContext, IMapper mapper)
         {
             this._dataContext = dataContext;
             this._mapper = mapper;
@@ -38,13 +38,6 @@ namespace Dating_WebAPI.Data
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             return await _dataContext.Users.Include(prop => prop.Photos).ToListAsync();
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            // SaveChangesAsync返回int
-            // 因為是要返回布林值，所以當有儲存時就會 > 0
-            return await _dataContext.SaveChangesAsync() > 0;
         }
 
         public void Update(AppUser user)
@@ -90,6 +83,11 @@ namespace Dating_WebAPI.Data
                 q.ProjectTo<MemberDTO>(_mapper.ConfigurationProvider).AsNoTracking(), 
                 userParams.PageNumber, 
                 userParams.PageSize);
+        }
+
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _dataContext.Users.Where(n => n.UserName == username).Select(n => n.Gender).FirstOrDefaultAsync();
         }
     }
 }

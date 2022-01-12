@@ -18,10 +18,14 @@ namespace Dating_WebAPI.Helpers
 
             // 我們有實作ClaimsPrincipalExtension，所以可以找到GetUserName()
             int userId = resultContext.HttpContext.User.GetUserId();
-            IUserRepository repository = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            var user = await repository.GetUserByIdAsync(userId);
-            user.LastLoginTime = DateTime.Now;
-            await repository.SaveAllAsync();
+
+            IUnitOfWork unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+
+            var user = await unitOfWork.userRepository.GetUserByIdAsync(userId);
+
+            user.LastLoginTime = DateTime.UtcNow;
+
+            await unitOfWork.Complete();
         }
     }
 }

@@ -23,18 +23,13 @@ namespace Dating_WebAPI.Extensions
 
             services.AddScoped<IPhotosServices, PhotoServices>();
 
-            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // 使用IAsyncActionFilter偵測每一次呼叫API時，可以做什麼事情。
             services.AddScoped<LogUserActivity>();
 
-            services.AddScoped<ILikesRepository, LikesRepository>();
-
             //設定LifeTime只存在一個request，在同一個Requset中，不論是在哪邊被注入，都是同樣的實例。
             services.AddScoped<ITokenServices, TokenServices>();
-
-            //加入UserRepository
-            services.AddScoped<IUserRepository, UseRepository>();
 
             // 加入signalR的追蹤
             services.AddSingleton<PresenceTracker>();

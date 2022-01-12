@@ -16,13 +16,13 @@ namespace Dating_WebAPI.Controllers
     [Authorize]
     public class UsersController : BaseApIController
     {
-        private readonly IUserRepository _userRepository;
+        private IUnitOfWork unitOfWork;
         private readonly AutoMapper.IMapper _mapper;
         private readonly IPhotosServices _photosServices;
 
-        public UsersController(IUserRepository userRepository, AutoMapper.IMapper mapper, IPhotosServices photosServices)
+        public UsersController(IUnitOfWork unitOfWork, AutoMapper.IMapper mapper, IPhotosServices photosServices)
         {
-            this._userRepository = userRepository;
+            this.unitOfWork = unitOfWork;
             this._mapper = mapper;
             this._photosServices = photosServices;
         }
@@ -34,16 +34,16 @@ namespace Dating_WebAPI.Controllers
         {
 
             // 設定初始值
-            var user = await _userRepository.GetUserByUserNameAsync(User.GetUserName());
+            var gender = await unitOfWork.userRepository.GetUserGender(User.GetUserName());
             
-            userParams.CurrentUserName = user.UserName;
+            userParams.CurrentUserName = User.GetUserName();
 
             if(string.IsNullOrEmpty(userParams.Gender)){
                 // 如果登入是女性，就顯示男性，反之亦然。
-                userParams.Gender = user.Gender == "male" ? "female" : "male";
+                userParams.Gender = gender == "male" ? "female" : "male";
             }
 
-            var users = await _userRepository.GetMembersAsync(userParams);
+            var users = await unitOfWork.userRepository.GetMembersAsync(userParams);
             
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
@@ -57,7 +57,7 @@ namespace Dating_WebAPI.Controllers
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDTO>> GetUser(string username)
         {
-            return await _userRepository.GetMemberAsync(username);
+            return await unitOfWork.userRepository.GetMemberAsync(username);
         }
 
         // Updating並不需要從Client傳送Object過來，因為Client已經有所有的Data聯繫Entity
@@ -66,14 +66,14 @@ namespace Dating_WebAPI.Controllers
         public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDTO)
         {
             // 抓Token的資料作比對。
-            var user = await _userRepository.GetUserByUserNameAsync(User.GetUserName());
+            var user = await unitOfWork.userRepository.GetUserByUserNameAsync(User.GetUserName());
 
             // Map可以直接幫助我們讓DTO與Entity做對應，不然就要寫user.City = memberUpdateDTO.City....等。
             _mapper.Map(memberUpdateDTO, user);
 
-            _userRepository.Update(user);
+            unitOfWork.userRepository.Update(user);
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await unitOfWork.Complete()) return NoContent();
 
             return BadRequest("資料更新錯誤");
         }
@@ -82,7 +82,7 @@ namespace Dating_WebAPI.Controllers
         public async Task<ActionResult<PhotoDTO>> AddPhoto(IFormFile file)
         {
             // 取得使用者
-            AppUser user = await _userRepository.GetUserByUserNameAsync(User.GetUserName());
+            AppUser user = await unitOfWork.userRepository.GetUserByUserNameAsync(User.GetUserName());
 
             // 上傳照片
             var result = await _photosServices.AddPhotoAsync(file);
@@ -105,7 +105,7 @@ namespace Dating_WebAPI.Controllers
 
             user.Photos.Add(photo);
 
-            if (await _userRepository.SaveAllAsync())
+            if (await unitOfWork.Complete())
             {
                 // 回傳200固然是好，但是不必每次要抓照片都要從getuser裡面去把照片抓出來，正確的add東西回傳應該是201。
                 // 所以要使Header加上Location去識別這次上傳的是什麼。
@@ -121,7 +121,7 @@ namespace Dating_WebAPI.Controllers
         [HttpPut("setMainPhoto/{photoId}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
-            AppUser user = await _userRepository.GetUserByUserNameAsync(User.GetUserName());
+            AppUser user = await unitOfWork.userRepository.GetUserByUserNameAsync(User.GetUserName());
 
             var photo = user.Photos.FirstOrDefault(n => n.Id == photoId);
 
@@ -136,7 +136,7 @@ namespace Dating_WebAPI.Controllers
 
             photo.IsMain = true;
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await unitOfWork.Complete()) return NoContent();
 
             return BadRequest("照片設定失敗!");
         }
@@ -144,7 +144,7 @@ namespace Dating_WebAPI.Controllers
         [HttpDelete("deletePhoto/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            AppUser user = await _userRepository.GetUserByUserNameAsync(User.GetUserName());
+            AppUser user = await unitOfWork.userRepository.GetUserByUserNameAsync(User.GetUserName());
 
             var photo = user.Photos.FirstOrDefault(n => n.Id == photoId);
 
@@ -162,7 +162,7 @@ namespace Dating_WebAPI.Controllers
 
             user.Photos.Remove(photo);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await unitOfWork.Complete()) return Ok();
 
             return BadRequest("刪除照片失敗!");
         }

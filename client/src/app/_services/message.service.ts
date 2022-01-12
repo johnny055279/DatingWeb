@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
+import { mergeAnalyzedFiles } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Group } from '../_models/group';
 import { Message } from '../_models/message';
 import { User } from '../_models/user';
 import { getPaginationHeaders, getPaginationResult } from './paginationHelper';
@@ -54,11 +56,26 @@ export class MessageService {
 
     this.hubConnection.on('NewMessage', message => {
       this.messageThread$.pipe(take(1)).subscribe(messages => {
-
         // use spread operator to create a new array for BehaviorSubject
         this.messageThreadSource.next([...messages, message]);
       })
     });
+
+    // find if there are unread message and mark read
+    this.hubConnection.on("UpdateGroup", (group: Group) => {
+      if (group.connections.some(n => n.username === otherUserName)) {
+        this.messageThread$.pipe(take(1)).subscribe(messages => {
+          messages.forEach(element => {
+            if (!element.dateRead) {
+              element.dateRead = new Date(Date.now());
+            }
+          });
+          // create a new array, it shouldn't interfer with angular change tracking
+          this.messageThreadSource.next([...messages]);
+        });
+
+      }
+    })
   }
 
   stopHubConnection() {
