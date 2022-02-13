@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-errors',
@@ -8,61 +9,61 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ErrorsComponent implements OnInit {
 
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
   validationErrors!: string[];
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
   }
 
-  get404Error(){
+  get404Error() {
     this.http.get(this.baseUrl + 'Bug/notFound').subscribe(reponse => {
-        console.log(reponse);
+      console.log(reponse);
     },
-    error =>{
-      console.log(error);
-    }
+      error => {
+        console.log(error);
+      }
     )
   }
 
-  get400Error(){
+  get400Error() {
     this.http.get(this.baseUrl + 'Bug/badRequest').subscribe(reponse => {
-        console.log(reponse);
+      console.log(reponse);
     },
-    error =>{
-      console.log(error);
-    }
+      error => {
+        console.log(error);
+      }
     )
   }
 
-  get500Error(){
+  get500Error() {
     this.http.get(this.baseUrl + 'Bug/serverError').subscribe(reponse => {
-        console.log(reponse);
+      console.log(reponse);
     },
-    error =>{
-      console.log(error);
-    }
+      error => {
+        console.log(error);
+      }
     )
   }
 
-  get401Error(){
+  get401Error() {
     this.http.get(this.baseUrl + 'Bug/auth').subscribe(reponse => {
-        console.log(reponse);
+      console.log(reponse);
     },
-    error =>{
-      console.log(error);
-    }
+      error => {
+        console.log(error);
+      }
     )
   }
 
-  get404ValidationError(){
+  get404ValidationError() {
     this.http.post(this.baseUrl + 'account/register', {}).subscribe(reponse => {
-        console.log(reponse);
+      console.log(reponse);
     },
-    error =>{
-      console.log(error);
-      this.validationErrors = error;
-    }
+      error => {
+        console.log(error);
+        this.validationErrors = error;
+      }
     )
   }
 

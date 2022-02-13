@@ -19,7 +19,7 @@ namespace Dating_WebAPI.Helpers
     {
         public AutoMapperProfiles()
         {
-            // ForMember代表設定哪個屬性我們想要控制
+            // ForMember代表設定哪個屬性我們想要控制, 一樣分別設定控制的參數, 以及欲設定的的值, 例如date都是要抓DateTime.Now的時候
             // 第一個參數是我們想控制的屬性，第二個參數擺我們要Mapping的過去的地方
             CreateMap<AppUser, MemberDTO>().ForMember(
                 destination => destination.PhotoUrl,

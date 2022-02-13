@@ -10,7 +10,6 @@ namespace Dating_WebAPI.Entities
     {
         [Key]
         public string Gender { get; set; }
-
         public string NickName { get; set; }
         public DateTime Birthday { get; set; }
         public DateTime AccountCreateTime { get; set; } = DateTime.Now;
