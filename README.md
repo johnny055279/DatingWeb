@@ -5,5 +5,3 @@
 ### database: mssql
 ### client: Angular 12 + bootstrap 5
 ### other: signalR, cloudinary
-
-### demo page: 
