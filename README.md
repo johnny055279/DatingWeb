@@ -1,7 +1,7 @@
 # Practice project：DatingWeb
 
-### api framework: .net core 5
-### orm: ef core(code first)
-### database: mssql
-### client: Angular 12 + bootstrap 5
-### other: signalR, cloudinary
+### Backend API: .Net core 5
+### ORM: EF core(code first)
+### Database: MSSQL/Postgres
+### Client: Angular 12 + bootstrap 5
+### Other: signalR, cloudinary
