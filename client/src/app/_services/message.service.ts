@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 import { Group } from '../_models/group';
 import { Message } from '../_models/message';
 import { User } from '../_models/user';
+import { BusyService } from './busy.service';
 import { getPaginationHeaders, getPaginationResult } from './paginationHelper';
 
 @Injectable({
@@ -20,7 +21,7 @@ export class MessageService {
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   private hubConnection: HubConnection
   public messageThread$ = this.messageThreadSource.asObservable();
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private busyService: BusyService) { }
 
   getMessages(pageNum, pageSize, container) {
     let params = getPaginationHeaders(pageNum, pageSize);
@@ -44,11 +45,12 @@ export class MessageService {
   }
 
   createHubConnection(user: User, otherUserName: string) {
+    this.busyService.busy();
     this.hubConnection = new HubConnectionBuilder().withUrl(this.hubUrl + "message?user=" + otherUserName, {
       accessTokenFactory: () => user.token
     }).withAutomaticReconnect().build();
 
-    this.hubConnection.start().catch(error => console.log(error));
+    this.hubConnection.start().catch(error => console.log(error)).finally(() => { this.busyService.idle() });
 
     this.hubConnection.on('ReceiveMessageThread', message => {
       this.messageThreadSource.next(message);
@@ -79,6 +81,7 @@ export class MessageService {
   }
 
   stopHubConnection() {
+    this.messageThreadSource.next([]);
     // 不只是離開頁面時會stop, 為了防止重複stop而出錯, 這裡判斷是否還存在hubConnection
     if (this.hubConnection) {
       this.hubConnection.stop();
