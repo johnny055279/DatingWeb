@@ -17,6 +17,8 @@ namespace Dating_WebAPI.Data
     {
         public DataContext(DbContextOptions options) : base(options)
         {
+            // fix issue: "Cannot write DateTime with Kind=Unspecified to PostgreSQL type 'timestamp with time zone" when migrations
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         // 名字要跟DataBase裡面一樣，不然會抓不到!!
